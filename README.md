@@ -1,176 +1,130 @@
 # Kubernetes MongoDB + Mongo Express Project
-Deploy a complete MongoDB + Mongo Express application on a Kubernetes Minikube cluster using Deployments, Services, Secrets, ConfigMaps, and Namespaces.
 
-A perfect project to demonstrate your DevOps, Cloud, and Kubernetes skills.
+A complete deployment of MongoDB and Mongo Express on a Kubernetes
+Minikube cluster using Deployments, Services, Secrets, ConfigMaps, and
+Namespaces.
 
-📚 Table of Contents
+## Overview
 
-Overview
+This project demonstrates how to deploy: - MongoDB (Deployment +
+ClusterIP Service) - Mongo Express UI (Deployment + NodePort Service) -
+Secrets for database credentials - ConfigMap for MongoDB hostname -
+Namespace isolation - Minikube as the local Kubernetes environment
 
-Architecture
+## Architecture
 
-Features
+    User/Browser
+        |
+        v
+    NodePort Service (30000)
+        |
+        v
+    Mongo Express Pod
+        |
+        |-- ConfigMap (DB Host)
+        |-- Secret (Credentials)
+        |
+        v
+    MongoDB Service (ClusterIP)
+        |
+        v
+    MongoDB Pod
 
-Tech Stack
+## Features
 
-Project Structure
+-   Kubernetes Deployments for MongoDB & Mongo Express
+-   Secure credentials using Secrets
+-   DB configuration using ConfigMap
+-   NodePort exposure for Mongo Express UI
+-   Namespace-based isolation
+-   Minikube-based local Kubernetes setup
 
-Prerequisites
+## Tech Stack
 
-Setup Instructions
+  Component           Technology
+  ------------------- -------------------------
+  Container Runtime   Docker
+  Kubernetes          Minikube
+  Database            MongoDB
+  UI                  Mongo Express
+  Config              Secrets, ConfigMap
+  Tools               kubectl, Docker Desktop
 
-Accessing Mongo Express UI
+## Project Structure
 
-Troubleshooting
+    k8s-mongo-mongoexpress/
+     ├── manifests/
+     │   ├── namespace.yaml
+     │   ├── mongo-secret.yaml
+     │   ├── mongo-configmap.yaml
+     │   ├── mongo.yaml
+     │   └── mongo-express.yaml
+     └── README.md
 
-Cleanup
+## Prerequisites
 
-Screenshots
+Install: - Docker Desktop - Minikube - kubectl - Homebrew (macOS)
 
-Credits
+## Setup Instructions
 
-📌 Overview
+### 1. Start Minikube
 
-This project demonstrates how to deploy a database + UI setup using Kubernetes components:
+    minikube start --driver=docker --memory=1800 --cpus=2
+    kubectl get nodes
 
-MongoDB Deployment + ClusterIP Service
+### 2. Apply Kubernetes Manifests
 
-Mongo Express Deployment + NodePort Service
+    kubectl apply -f manifests/namespace.yaml
+    kubectl apply -f manifests/mongo-secret.yaml
+    kubectl apply -f manifests/mongo-configmap.yaml
+    kubectl apply -f manifests/mongo.yaml
+    kubectl apply -f manifests/mongo-express.yaml
 
-Secrets for DB credentials
+### 3. Check Resources
 
-ConfigMap for MongoDB service hostname
+    kubectl get pods -n demo-app
+    kubectl get svc -n demo-app
 
-Namespace isolation
+## Access Mongo Express UI
 
-Minikube as the Kubernetes environment
+1.  Get Minikube IP\
 
-This mirrors real-world microservice deployment patterns used in DevOps & production systems.
+```{=html}
+<!-- -->
+```
+    minikube ip
 
-🏗️ Architecture
-                          +-----------------------------+
-                          |       User / Browser        |
-                          |   http://<minikube-ip>      |
-                          +--------------+--------------+
-                                         |
-                                         v
-                           NodePort Service (30000)
-                                         |
-                                         v
-                          Mongo Express Deployment/Pod
-                                         |
-             --------------------------------------------------
-             |                      |                          |
-      ConfigMap (DB Host)     Secret (Credentials)     UI Dashboard
-             |
-             v
-        ClusterIP Service (MongoDB)
-             |
-             v
-      MongoDB Deployment/Pod
+2.  Open in browser:\
 
-✨ Features
+```{=html}
+<!-- -->
+```
+    http://<minikube-ip>:30000
 
-✔ Deploy MongoDB using Kubernetes Deployment
-✔ Secure DB credentials using Kubernetes Secrets
-✔ Provide DB connection info using ConfigMap
-✔ Expose Mongo Express UI using NodePort
-✔ Isolate entire stack in custom Namespace
-✔ Real-world Minikube setup for local testing
-✔ Follows GitOps-friendly folder structure
+### Default Login
 
-🧰 Tech Stack
-Component	Technology
-Kubernetes	Minikube
-Container Runtime	Docker
-Database	MongoDB
-UI	Mongo Express
-Config Management	ConfigMap + Secrets
-Networking	NodePort + ClusterIP
-Tools	kubectl, Docker Desktop
-📁 Project Structure
-k8s-mongo-mongoexpress/
-│
-├── manifests/
-│   ├── namespace.yaml
-│   ├── mongo-secret.yaml
-│   ├── mongo-configmap.yaml
-│   ├── mongo.yaml
-│   ├── mongo-express.yaml
-│
-└── README.md
+    Username: admin
+    Password: pass
 
+## Troubleshooting
 
-Each manifest is modular, easy to read, and easy to deploy.
+### Mongo Express cannot connect to MongoDB
 
-🛠 Prerequisites
+    kubectl logs -n demo-app -l app=mongo-express
 
-Make sure these are installed:
+### Secrets missing
 
-Docker Desktop
+    kubectl get secrets -n demo-app
 
-Minikube
+### NodePort not accessible
 
-kubectl
+    minikube service mongo-express-service -n demo-app --url
 
-Homebrew (macOS)
+## Cleanup
 
-🚀 Setup Instructions
-Start Minikube
-minikube start --driver=docker --memory=1800 --cpus=2
+    kubectl delete namespace demo-app
+    minikube stop
 
+## Credits
 
-Verify:
-
-kubectl get nodes
-
-Apply Kubernetes Manifests (in order)
-kubectl apply -f manifests/namespace.yaml
-kubectl apply -f manifests/mongo-secret.yaml
-kubectl apply -f manifests/mongo-configmap.yaml
-kubectl apply -f manifests/mongo.yaml
-kubectl apply -f manifests/mongo-express.yaml
-
-Check status
-kubectl get pods -n demo-app
-kubectl get svc -n demo-app
-
-🌐 Accessing Mongo Express UI
-Get Minikube IP:
-minikube ip
-
-Open in browser:
-http://<minikube-ip>:30000
-
-
-Example:
-
-http://192.168.49.2:30000
-
-Default Login
-Username: admin
-Password: pass
-
-🛠️ Troubleshooting
-Mongo Express cannot connect to MongoDB
-
-Check logs:
-
-kubectl logs -n demo-app -l app=mongo-express
-
-Secret not found
-kubectl get secrets -n demo-app
-
-NodePort not accessible
-minikube service mongo-express-service -n demo-app --url
-
-🧹 Cleanup
-
-Delete everything:
-
-kubectl delete namespace demo-app
-
-
-Stop Minikube:
-
-minikube stop
+Created for hands-on Kubernetes & DevOps learning.
