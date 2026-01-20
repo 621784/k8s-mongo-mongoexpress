@@ -125,6 +125,3 @@ Install: - Docker Desktop - Minikube - kubectl - Homebrew (macOS)
     kubectl delete namespace demo-app
     minikube stop
 
-## Credits
-
-Created for hands-on Kubernetes & DevOps learning.
